@@ -19,8 +19,9 @@ class AccumulatedResultContext<T, E>(
     override val coroutineContext: CoroutineContext,
     private val resultHolder: ResultHolder<T, E>
 ) : CoroutineScope {
-
-    suspend operator fun <T, F: E> Result<T, F>.not(): T = when(this) {
+    suspend operator fun <T, F: E> Result<T, F>.component1(): T = this.bind()
+    suspend operator fun <T, F: E> Result<T, F>.not(): T = this.bind()
+    suspend fun <T, F: E> Result<T, F>.bind(): T = when(this) {
         is Success -> this.value
         is Failure ->  {
             resultHolder.lastPartialResult = this
