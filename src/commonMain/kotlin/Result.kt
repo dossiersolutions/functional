@@ -31,9 +31,6 @@ fun <T, E> Result<T, E>.failUnless(
         is Failure -> this
     }
 
-fun <T, E> Iterable<Result<T, E>>.partition(): Pair<List<Success<T>>, List<Failure<E>>> =
-    Pair(this.filterIsInstance<Success<T>>(), this.filterIsInstance<Failure<E>>())
-
 inline fun <T, E> Result<T, E>.getOrElse(
     onFailure: (Failure<E>) -> Nothing
 ): T =
@@ -41,3 +38,26 @@ inline fun <T, E> Result<T, E>.getOrElse(
         is Failure -> onFailure(this)
         is Success -> value
     }
+
+fun <T, E> Iterable<Result<T, E>>.partition(): Pair<List<Success<T>>, List<Failure<E>>> =
+    Pair(this.filterIsInstance<Success<T>>(), this.filterIsInstance<Failure<E>>())
+
+
+fun <T, U, E> Iterable<T>.traverseToResult(f: (T) -> Result<U, E>): Result<List<U>, E> {
+    tailrec fun go(iter: Iterator<T>, values: MutableList<U>): Result<List<U>, E> =
+        if (iter.hasNext()) {
+            when (val elemResult = f(iter.next())) {
+                is Success -> {
+                    values.add(elemResult.value)
+                    go(iter, values)
+                }
+                is Failure -> elemResult
+            }
+        } else {
+            Success(values)
+        }
+
+    return go(iterator(), mutableListOf())
+}
+
+fun <T, E> Iterable<Result<T, E>>.sequenceToResult(): Result<List<T>, E> = traverseToResult { it }
