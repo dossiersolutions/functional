@@ -43,7 +43,7 @@ fun <E, T> Iterable<Outcome<E, T>>.partition(): Pair<List<Success<T>>, List<Fail
     Pair(this.filterIsInstance<Success<T>>(), this.filterIsInstance<Failure<E>>())
 
 
-fun <E, T, U> Iterable<T>.traverseToResult(f: (T) -> Outcome<E, U>): Outcome<E, List<U>> {
+fun <E, T, U> Iterable<T>.traverseToOutcome(f: (T) -> Outcome<E, U>): Outcome<E, List<U>> {
     tailrec fun go(iter: Iterator<T>, values: MutableList<U>): Outcome<E, List<U>> =
         if (iter.hasNext()) {
             when (val elemResult = f(iter.next())) {
@@ -60,4 +60,11 @@ fun <E, T, U> Iterable<T>.traverseToResult(f: (T) -> Outcome<E, U>): Outcome<E, 
     return go(iterator(), mutableListOf())
 }
 
-fun <E, T> Iterable<Outcome<E, T>>.sequenceToResult(): Outcome<E, List<T>> = traverseToResult { it }
+fun <E, T> Iterable<Outcome<E, T>>.sequenceToOutcome(): Outcome<E, List<T>> = traverseToOutcome { it }
+
+inline fun <E, T> runCatching(errorBuilder: (exception: Exception) -> E, block: () -> T): Outcome<E, T> = try {
+    Success(block())
+}
+catch(e: Exception) {
+    Failure(errorBuilder(e))
+}
