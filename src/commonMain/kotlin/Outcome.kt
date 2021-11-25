@@ -4,25 +4,25 @@ sealed class Outcome<out E, out T>
 class Success<out T>(val value: T) : Outcome<Nothing, T>()
 class Failure<out E>(val error: E) : Outcome<E, Nothing>()
 
-fun <E, T, U> Outcome<E, T>.map(transform: (T) -> U): Outcome<E, U> =
+inline fun <E, T, U> Outcome<E, T>.map(transform: (T) -> U): Outcome<E, U> =
     when (this) {
         is Success -> Success(transform(value))
         is Failure -> this
     }
 
-fun <E, T, F> Outcome<E, T>.mapError(transform: (E) -> F): Outcome<F, T> =
+inline fun <E, T, F> Outcome<E, T>.mapError(transform: (E) -> F): Outcome<F, T> =
     when (this) {
         is Success -> this
         is Failure -> Failure(transform(error))
     }
 
-fun <E, T, U> Outcome<E, T>.andThen(transform: (T) -> Outcome<E, U>): Outcome<E, U> =
+inline fun <E, T, U> Outcome<E, T>.andThen(transform: (T) -> Outcome<E, U>): Outcome<E, U> =
     when (this) {
         is Success -> transform(value)
         is Failure -> this
     }
 
-fun <E, T> Outcome<E, T>.failUnless(
+inline fun <E, T> Outcome<E, T>.failUnless(
     conditionBuilder: (T) -> Boolean,
     errorBuilder: (T) -> E
 ): Outcome<E, T> =
