@@ -16,5 +16,11 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
+        val jvmTest by getting {
+            dependencies {
+                implementation("org.testcontainers:junit-jupiter:1.16.2")
+                implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+            }
+        }
     }
 }
