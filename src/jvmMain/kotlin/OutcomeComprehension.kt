@@ -21,13 +21,10 @@ class AccumulatedResultContext<E, T>(
 ) : CoroutineScope {
     suspend operator fun <F: E, T> Outcome<F, T>.component1(): T = this.bind()
     suspend operator fun <F: E, T> Outcome<F, T>.not(): T = this.bind()
-    suspend fun <F: E, T> Outcome<F, T>.bind(): T = when(this) {
-        is Success -> this.value
-        is Failure ->  {
-            resultHolder.lastPartialOutcome = this
-            coroutineScope { cancel() }
-            awaitCancellation()
-        }
+    suspend fun <F: E, T> Outcome<F, T>.bind(): T = this.resolve {
+        resultHolder.lastPartialOutcome = it
+        coroutineScope { cancel() }
+        awaitCancellation()
     }
 }
 

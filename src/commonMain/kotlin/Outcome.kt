@@ -39,6 +39,14 @@ inline fun <E, T> Outcome<E, T>.getOrElse(
         is Success -> value
     }
 
+inline fun <E, T> Outcome<E, T>.resolve(
+    onFailure: (Failure<E>) -> T
+): T =
+    when(this) {
+        is Failure -> onFailure(this)
+        is Success -> value
+    }
+
 fun <E, T> Iterable<Outcome<E, T>>.partition(): Pair<List<Success<T>>, List<Failure<E>>> =
     Pair(this.filterIsInstance<Success<T>>(), this.filterIsInstance<Failure<E>>())
 
