@@ -39,6 +39,9 @@ inline fun <E, T> Outcome<E, T>.getOrElse(
         is Success -> value
     }
 
+fun <E, T> Outcome<E, T>.forceGet(): T =
+    getOrElse { throw RuntimeException(it.error.toString()) }
+
 inline fun <E, T> Outcome<E, T>.resolve(
     onFailure: (Failure<E>) -> T
 ): T =
