@@ -1,3 +1,7 @@
+plugins {
+    kotlin("plugin.serialization") version "1.5.21"
+}
+
 kotlin {
     jvm()
     sourceSets {
@@ -5,6 +9,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0")
             }
         }
