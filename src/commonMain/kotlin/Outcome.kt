@@ -2,7 +2,7 @@ package no.dossier.libraries.functional
 
 import kotlinx.serialization.Serializable
 
-
+@Serializable
 sealed class Outcome<out E, out T>
 
 
