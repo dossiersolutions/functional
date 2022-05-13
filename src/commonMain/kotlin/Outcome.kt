@@ -1,15 +1,7 @@
 package no.dossier.libraries.functional
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 sealed class Outcome<out E, out T>
-
-
-@Serializable
 class Success<out T>(val value: T) : Outcome<Nothing, T>()
-
-@Serializable
 class Failure<out E>(val error: E) : Outcome<E, Nothing>()
 
 inline fun <E, T, U> Outcome<E, T>.map(transform: (T) -> U): Outcome<E, U> =
