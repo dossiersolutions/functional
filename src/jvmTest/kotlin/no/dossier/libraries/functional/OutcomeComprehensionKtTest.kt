@@ -8,7 +8,7 @@ internal class OutcomeComprehensionKtTest {
 
     @Test
     fun `should succeed if all outcomes succeed`() {
-        val outcome = attemptBuildResult<String, String> {
+        val outcome = composeOutcome<String, String> {
             val a = !Success("a")
             val b = !Success("b")
             Success("${a}${b}")
@@ -20,7 +20,7 @@ internal class OutcomeComprehensionKtTest {
 
     @Test
     fun `should fail if first outcome is a failure`() {
-        val outcome = attemptBuildResult<String, String> {
+        val outcome = composeOutcome<String, String> {
             val a = !(Failure("failed") as Outcome<String, String>)
             val b = !Success("b")
             Success("${a}${b}")
@@ -31,7 +31,7 @@ internal class OutcomeComprehensionKtTest {
 
     @Test
     fun `should fail if second outcome is a failure`() {
-        val outcome = attemptBuildResult<String, String> {
+        val outcome = composeOutcome<String, String> {
             val a = !Success("a")
             val b = !(Failure("failed") as Outcome<String, String>)
             Success("${a}${b}")
@@ -42,7 +42,7 @@ internal class OutcomeComprehensionKtTest {
 
     @Test
     fun `should fail if all outcomes are failures`() {
-        val outcome = attemptBuildResult<String, String> {
+        val outcome = composeOutcome<String, String> {
             val a = !(Failure("failed a") as Outcome<String, String>)
             val b = !(Failure("failed b") as Outcome<String, String>)
             Success("${a}${b}")

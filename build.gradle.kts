@@ -2,14 +2,48 @@ import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import java.net.URL
 
 group = "no.dossier.libraries"
-version = "0.1.0"
+version = "0.1.1-SNAPSHOT"
 
 object Meta {
     const val desc = "Functional library"
     const val license = "MIT"
     const val githubRepo = "dossiersolutions/functional"
-    const val release = "https://s01.oss.sonatype.org/service/local/"
-    const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    const val releaseRepoUrl = "https://s01.oss.sonatype.org/service/local/"
+    const val snapshotRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+}
+
+fun MavenPom.commonMetadata() {
+    name.set(project.name)
+    description.set(Meta.desc)
+    url.set("https://github.com/${Meta.githubRepo}")
+    licenses {
+        license {
+            name.set(Meta.license)
+            url.set("https://opensource.org/licenses/MIT")
+        }
+    }
+    developers {
+        developer {
+            id.set("kubapet")
+            name.set("Jakub Petrzilka")
+            organization.set("Dossier Solutions")
+            organizationUrl.set("https://dossier.no/")
+        }
+    }
+    scm {
+        url.set(
+            "https://github.com/${Meta.githubRepo}.git"
+        )
+        connection.set(
+            "scm:git:git://github.com/${Meta.githubRepo}.git"
+        )
+        developerConnection.set(
+            "scm:git:git://github.com/${Meta.githubRepo}.git"
+        )
+    }
+    issueManagement {
+        url.set("https://github.com/${Meta.githubRepo}/issues")
+    }
 }
 
 repositories {
@@ -108,73 +142,13 @@ publishing {
         val jvm by existing(MavenPublication::class) {
             artifact(tasks["javadocJvmJar"])
             pom {
-                name.set(project.name)
-                description.set(Meta.desc)
-                url.set("https://github.com/${Meta.githubRepo}")
-                licenses {
-                    license {
-                        name.set(Meta.license)
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("kubapet")
-                        name.set("Jakub Petrzilka")
-                        organization.set("Dossier Solutions")
-                        organizationUrl.set("https://dossier.no/")
-                    }
-                }
-                scm {
-                    url.set(
-                        "https://github.com/${Meta.githubRepo}.git"
-                    )
-                    connection.set(
-                        "scm:git:git://github.com/${Meta.githubRepo}.git"
-                    )
-                    developerConnection.set(
-                        "scm:git:git://github.com/${Meta.githubRepo}.git"
-                    )
-                }
-                issueManagement {
-                    url.set("https://github.com/${Meta.githubRepo}/issues")
-                }
+                commonMetadata()
             }
         }
         val kotlinMultiplatform by existing(MavenPublication::class) {
             artifact(tasks["javadocKotlinMultiplatformJar"])
             pom {
-                name.set(project.name)
-                description.set(Meta.desc)
-                url.set("https://github.com/${Meta.githubRepo}")
-                licenses {
-                    license {
-                        name.set(Meta.license)
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("kubapet")
-                        name.set("Jakub Petrzilka")
-                        organization.set("Dossier Solutions")
-                        organizationUrl.set("https://dossier.no/")
-                    }
-                }
-                scm {
-                    url.set(
-                        "https://github.com/${Meta.githubRepo}.git"
-                    )
-                    connection.set(
-                        "scm:git:git://github.com/${Meta.githubRepo}.git"
-                    )
-                    developerConnection.set(
-                        "scm:git:git://github.com/${Meta.githubRepo}.git"
-                    )
-                }
-                issueManagement {
-                    url.set("https://github.com/${Meta.githubRepo}/issues")
-                }
+                commonMetadata()
             }
         }
     }
@@ -183,10 +157,10 @@ publishing {
 nexusPublishing {
     repositories {
         sonatype {
-            nexusUrl.set(uri(Meta.release))
-            snapshotRepositoryUrl.set(uri(Meta.snapshot))
+            nexusUrl.set(uri(Meta.releaseRepoUrl))
+            snapshotRepositoryUrl.set(uri(Meta.snapshotRepoUrl))
             val ossrhUsername = System.getenv("OSSRH_USERNAME")
-            val ossrhPassword =System.getenv("OSSRH_PASSWORD")
+            val ossrhPassword = System.getenv("OSSRH_PASSWORD")
             username.set(ossrhUsername)
             password.set(ossrhPassword)
         }
