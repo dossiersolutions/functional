@@ -78,12 +78,16 @@ kotlin {
             dependencies {
                 implementation("org.testcontainers:junit-jupiter:1.16.2")
                 implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+                implementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
             }
         }
     }
 }
 
 tasks {
+    withType<Test> {
+        useJUnitPlatform()
+    }
     withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets {
             removeIf { it.name == "jvmDoc" }
