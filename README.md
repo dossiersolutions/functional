@@ -1,5 +1,5 @@
-# funktional
-Funktional is a functional library for Kotlin
+# functional
+A functional library for Kotlin
 
 # License
 See [LICENSE](LICENSE)
