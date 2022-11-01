@@ -74,12 +74,22 @@ tasks {
         }
     }
     val dokkaHtml by existing
+    val javadocKotlinMultiplatformJar by registering(Jar::class) {
+        group = JavaBasePlugin.DOCUMENTATION_GROUP
+        description = "Assembles Javadoc JAR for KotlinMultiplatform publication"
+        archiveClassifier.set("javadoc")
+        archiveAppendix.set("")
+        from(dokkaHtml.get())
+    }
     val javadocJvmJar by registering(Jar::class) {
         group = JavaBasePlugin.DOCUMENTATION_GROUP
-        description = "Assembles Javadoc JAR"
+        description = "Assembles Javadoc JAR for JVM publication"
         archiveClassifier.set("javadoc")
         archiveAppendix.set("jvm")
         from(dokkaHtml.get())
+    }
+    val publish by existing {
+        dependsOn(javadocKotlinMultiplatformJar, javadocJvmJar)
     }
 }
 
@@ -95,12 +105,7 @@ signing {
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
-            groupId = project.group.toString()
-            artifactId = project.name
-            version = project.version.toString()
-            from(components["kotlin"])
-            artifact(tasks["sourcesJar"])
+        val jvm by existing(MavenPublication::class) {
             artifact(tasks["javadocJvmJar"])
             pom {
                 name.set(project.name)
@@ -135,6 +140,55 @@ publishing {
                     url.set("https://github.com/${Meta.githubRepo}/issues")
                 }
             }
+        }
+        val kotlinMultiplatform by existing(MavenPublication::class) {
+            artifact(tasks["javadocKotlinMultiplatformJar"])
+            pom {
+                name.set(project.name)
+                description.set(Meta.desc)
+                url.set("https://github.com/${Meta.githubRepo}")
+                licenses {
+                    license {
+                        name.set(Meta.license)
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("kubapet")
+                        name.set("Jakub Petrzilka")
+                        organization.set("Dossier Solutions")
+                        organizationUrl.set("https://dossier.no/")
+                    }
+                }
+                scm {
+                    url.set(
+                        "https://github.com/${Meta.githubRepo}.git"
+                    )
+                    connection.set(
+                        "scm:git:git://github.com/${Meta.githubRepo}.git"
+                    )
+                    developerConnection.set(
+                        "scm:git:git://github.com/${Meta.githubRepo}.git"
+                    )
+                }
+                issueManagement {
+                    url.set("https://github.com/${Meta.githubRepo}/issues")
+                }
+            }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri(Meta.release))
+            snapshotRepositoryUrl.set(uri(Meta.snapshot))
+            val ossrhUsername = System.getenv("OSSRH_USERNAME")
+            val ossrhPassword =System.getenv("OSSRH_PASSWORD")
+            username.set(ossrhUsername)
+            password.set(ossrhPassword)
         }
     }
 }
