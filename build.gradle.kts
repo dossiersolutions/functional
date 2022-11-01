@@ -1,13 +1,27 @@
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import java.net.URL
+
 group = "no.dossier.libraries"
-version = 0.1
+version = "0.1.0"
+
+object Meta {
+    const val desc = "Functional library"
+    const val license = "MIT"
+    const val githubRepo = "dossiersolutions/functional"
+    const val release = "https://s01.oss.sonatype.org/service/local/"
+    const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+}
 
 repositories {
     mavenCentral()
 }
 
 plugins {
-    id("org.gradle.maven-publish") // no version spec needed (Gradle built-in)
+    id("org.gradle.maven-publish")
+    id("org.gradle.signing")
     kotlin("multiplatform") version "1.7.20"
+    id("org.jetbrains.dokka") version "1.7.20"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 kotlin {
@@ -35,8 +49,92 @@ kotlin {
     }
 }
 
+tasks {
+    withType<DokkaTaskPartial>().configureEach {
+        dokkaSourceSets {
+            removeIf { it.name == "jvmDoc" }
+            named("jvmMain") {
+                includes.from("${projectDir}/src/jvmDoc/packages.md")
+                includes.from("${projectDir}/src/jvmDoc/module.md")
+                suppressObviousFunctions.set(true)
+                suppressInheritedMembers.set(true)
+                samples.from("${projectDir}/src/jvmDoc/kotlin")
+                if (file("${projectDir}/src/jvmMain").exists()) {
+                    sourceLink {
+                        localDirectory.set(file("src/jvmMain/kotlin"))
+                        remoteUrl.set(
+                            URL(
+                                "https://github.com/dossiersolutions/${projectDir.name}/src/jvmMain/kotlin"
+                            )
+                        )
+                        remoteLineSuffix.set("#lines-")
+                    }
+                }
+            }
+        }
+    }
+    val dokkaHtml by existing
+    val javadocJvmJar by registering(Jar::class) {
+        group = JavaBasePlugin.DOCUMENTATION_GROUP
+        description = "Assembles Javadoc JAR"
+        archiveClassifier.set("javadoc")
+        archiveAppendix.set("jvm")
+        from(dokkaHtml.get())
+    }
+}
+
+signing {
+    val signingKey = System.getenv("GPG_SIGNING_KEY")
+    val signingPassphrase = System.getenv("GPG_SIGNING_PASSPHRASE")
+
+    useInMemoryPgpKeys(signingKey, signingPassphrase)
+    val extension = extensions.getByName("publishing") as PublishingExtension
+    sign(extension.publications)
+}
+
+
 publishing {
-    repositories {
-        mavenCentral()
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
+            from(components["kotlin"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJvmJar"])
+            pom {
+                name.set(project.name)
+                description.set(Meta.desc)
+                url.set("https://github.com/${Meta.githubRepo}")
+                licenses {
+                    license {
+                        name.set(Meta.license)
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("kubapet")
+                        name.set("Jakub Petrzilka")
+                        organization.set("Dossier Solutions")
+                        organizationUrl.set("https://dossier.no/")
+                    }
+                }
+                scm {
+                    url.set(
+                        "https://github.com/${Meta.githubRepo}.git"
+                    )
+                    connection.set(
+                        "scm:git:git://github.com/${Meta.githubRepo}.git"
+                    )
+                    developerConnection.set(
+                        "scm:git:git://github.com/${Meta.githubRepo}.git"
+                    )
+                }
+                issueManagement {
+                    url.set("https://github.com/${Meta.githubRepo}/issues")
+                }
+            }
+        }
     }
 }
