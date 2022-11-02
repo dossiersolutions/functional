@@ -1,5 +1,3 @@
-image: gradle:7.4-jdk17
-
 clone:
   depth: full
 
@@ -12,7 +10,7 @@ definitions:
 
 pipelines:
   branches:
-    master:
+    main:
       - step:
           name: Build Artifacts
           caches:
