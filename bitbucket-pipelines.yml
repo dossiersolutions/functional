@@ -6,7 +6,7 @@ clone:
 definitions:
   services:
     docker:
-      memory: 2500
+      memory: 2000
   caches:
     gradlewrapper: ~/.gradle/wrapper
 
