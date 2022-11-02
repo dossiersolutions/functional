@@ -1,5 +1,6 @@
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import java.net.URL
+import java.util.Base64
 
 group = "no.dossier.libraries"
 version = "0.1.1-SNAPSHOT"
@@ -132,7 +133,7 @@ tasks {
 }
 
 signing {
-    val signingKey = System.getenv("GPG_SIGNING_KEY")
+    val signingKey = Base64.getDecoder().decode(System.getenv("GPG_SIGNING_KEY")).toString()
     val signingPassphrase = System.getenv("GPG_SIGNING_PASSPHRASE")
 
     useInMemoryPgpKeys(signingKey, signingPassphrase)
