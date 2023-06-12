@@ -3,7 +3,7 @@ import java.net.URL
 import java.util.Base64
 
 group = "no.dossier.libraries"
-version = "0.2.2"
+version = "0.2.3"
 
 object Meta {
     const val desc = "Functional library"
@@ -151,7 +151,7 @@ tasks {
         from(dokkaHtml.get())
     }
     val publish by existing {
-        dependsOn(javadocKotlinMultiplatformJar, javadocJvmJar)
+        dependsOn(javadocKotlinMultiplatformJar, javadocJvmJar, javadocNativeJar)
     }
 }
 
