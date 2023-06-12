@@ -3,7 +3,7 @@ import java.net.URL
 import java.util.Base64
 
 group = "no.dossier.libraries"
-version = "0.1.1"
+version = "0.2.0"
 
 object Meta {
     const val desc = "Functional library"
@@ -54,18 +54,34 @@ repositories {
 plugins {
     id("org.gradle.maven-publish")
     id("org.gradle.signing")
-    kotlin("multiplatform") version "1.7.20"
+    kotlin("multiplatform") version "1.8.22"
     id("org.jetbrains.dokka") version "1.7.20"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 kotlin {
+    linuxX64("native") {
+        binaries {
+            sharedLib {
+                baseName = "native"
+            }
+        }
+    }
     jvm()
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+            }
+        }
+        val nativeMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-linuxx64:1.6.4")
+            }
+        }
+        val jvmMain by getting {
+            dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
             }
         }
