@@ -3,7 +3,7 @@ import java.net.URL
 import java.util.Base64
 
 group = "no.dossier.libraries"
-version = "0.2.1"
+version = "0.2.2"
 
 object Meta {
     const val desc = "Functional library"
@@ -136,6 +136,13 @@ tasks {
         archiveAppendix.set("")
         from(dokkaHtml.get())
     }
+    val javadocNativeJar by registering(Jar::class) {
+        group = JavaBasePlugin.DOCUMENTATION_GROUP
+        description = "Assembles Javadoc JAR for Native publication"
+        archiveClassifier.set("javadoc")
+        archiveAppendix.set("native")
+        from(dokkaHtml.get())
+    }
     val javadocJvmJar by registering(Jar::class) {
         group = JavaBasePlugin.DOCUMENTATION_GROUP
         description = "Assembles Javadoc JAR for JVM publication"
@@ -160,6 +167,12 @@ signing {
 
 publishing {
     publications {
+        val native by existing(MavenPublication::class) {
+            artifact(tasks["javadocNativeJar"])
+            pom {
+                commonMetadata()
+            }
+        }
         val jvm by existing(MavenPublication::class) {
             artifact(tasks["javadocJvmJar"])
             pom {
