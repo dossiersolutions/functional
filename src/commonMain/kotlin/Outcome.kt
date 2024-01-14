@@ -39,7 +39,9 @@ inline fun <E, T> Outcome<E, T>.getOrElse(
         is Success -> value
     }
 
-fun <E, T> Outcome<E, T>.forceGet(): T =
+@Deprecated("Method renamed to unwrap", replaceWith = ReplaceWith("unwrap"))
+fun <E, T> Outcome<E, T>.forceGet(): T = unwrap()
+fun <E, T> Outcome<E, T>.unwrap(): T =
     getOrElse { throw RuntimeException(it.error.toString()) }
 
 inline fun <E, T> Outcome<E, T>.resolve(
@@ -79,3 +81,5 @@ inline fun <E, T> runCatching(errorBuilder: (exception: Exception) -> E, block: 
 catch(e: Exception) {
     Failure(errorBuilder(e))
 }
+
+fun <E, T> T?.notNull(errorBuilder: () -> E) = this?.let { Success(it) } ?: Failure(errorBuilder())
