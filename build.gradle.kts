@@ -55,8 +55,8 @@ plugins {
     id("org.gradle.maven-publish")
     id("org.gradle.signing")
     kotlin("multiplatform") version "1.9.20"
-    id("org.jetbrains.dokka") version "1.7.20"
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("org.jetbrains.dokka") version "1.9.10"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 kotlin {
@@ -166,6 +166,21 @@ signing {
 
 
 publishing {
+    repositories {
+        maven {
+            name = "DossierNexus"
+            url = uri("https://devsrv.dossier.no/nexus/repository/maven-releases/")
+            credentials {
+                // Read nexus username and password from env (CI) or ~/.gradle/gradle.properties
+                username = System.getenv("MAVEN_REPO_USERNAME") ?: project.property("nexusUsername")!!.toString()
+                password = System.getenv("MAVEN_REPO_PASSWORD") ?: project.property("nexusPassword")!!.toString()
+            }
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
+        }
+    }
     publications {
         val native by existing(MavenPublication::class) {
             artifact(tasks["javadocNativeJar"])
