@@ -3,7 +3,7 @@ import java.net.URL
 import java.util.Base64
 
 group = "no.dossier.libraries"
-version = "0.2.4"
+version = "0.2.5"
 
 object Meta {
     const val desc = "Functional library"
@@ -69,6 +69,11 @@ kotlin {
     }
     jvm()
     sourceSets {
+        all {
+            languageSettings.apply {
+                optIn("kotlin.js.ExperimentalJsExport")
+            }
+        }
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
