@@ -3,7 +3,7 @@ import java.net.URL
 import java.util.Base64
 
 group = "no.dossier.libraries"
-version = "0.2.7"
+version = "0.2.8"
 
 object Meta {
     const val desc = "Functional library"
@@ -57,6 +57,7 @@ plugins {
     kotlin("multiplatform") version "1.9.20"
     id("org.jetbrains.dokka") version "1.9.10"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
 }
 
 kotlin {
@@ -81,6 +82,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
             }
         }
         val nativeMain by getting {
