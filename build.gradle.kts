@@ -68,6 +68,9 @@ kotlin {
         }
     }
     jvm()
+    js(IR) {
+        binaries.library()
+    }
     sourceSets {
         all {
             languageSettings.apply {
@@ -88,6 +91,11 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.7.3")
             }
         }
         val commonTest by getting {

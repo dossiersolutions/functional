@@ -1,6 +1,7 @@
-package no.dossier.libraries.functional
-
 import kotlinx.coroutines.*
+import no.dossier.libraries.functional.Failure
+import no.dossier.libraries.functional.Outcome
+import no.dossier.libraries.functional.resolve
 import kotlin.coroutines.CoroutineContext
 
 /**
