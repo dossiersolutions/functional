@@ -1,10 +1,14 @@
 package no.dossier.libraries.functional
 
+import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 
 @JsExport
+@Serializable
 sealed class Outcome<out E, out T>
+@Serializable
 class Success<out T>(val value: T) : Outcome<Nothing, T>()
+@Serializable
 class Failure<out E>(val error: E) : Outcome<E, Nothing>()
 
 @JsExport
@@ -34,7 +38,6 @@ inline fun <E, T> Outcome<E, T>.failUnless(
         is Success -> if (conditionBuilder(value)) this else Failure(errorBuilder(value))
         is Failure -> this
     }
-@JsExport
 inline fun <E, T> Outcome<E, T>.getOrElse(
     onFailure: (Failure<E>) -> Nothing
 ): T =
@@ -48,7 +51,6 @@ fun <E, T> Outcome<E, T>.forceGet(): T = unwrap()
 fun <E, T> Outcome<E, T>.unwrap(): T =
     getOrElse { throw RuntimeException(it.error.toString()) }
 
-@JsExport
 inline fun <E, T> Outcome<E, T>.resolve(
     onFailure: (Failure<E>) -> T
 ): T =
@@ -57,12 +59,10 @@ inline fun <E, T> Outcome<E, T>.resolve(
         is Success -> value
     }
 
-@JsExport
 fun <E, T> Iterable<Outcome<E, T>>.partition(): Pair<List<Success<T>>, List<Failure<E>>> =
     Pair(this.filterIsInstance<Success<T>>(), this.filterIsInstance<Failure<E>>())
 
 
-@JsExport
 fun <E, T, U> Iterable<T>.traverseToOutcome(f: (T) -> Outcome<E, U>): Outcome<E, List<U>> {
     tailrec fun go(iter: Iterator<T>, values: MutableList<U>): Outcome<E, List<U>> =
         if (iter.hasNext()) {
@@ -80,10 +80,8 @@ fun <E, T, U> Iterable<T>.traverseToOutcome(f: (T) -> Outcome<E, U>): Outcome<E,
     return go(iterator(), mutableListOf())
 }
 
-@JsExport
 fun <E, T> Iterable<Outcome<E, T>>.sequenceToOutcome(): Outcome<E, List<T>> = traverseToOutcome { it }
 
-@JsExport
 inline fun <E, T> runCatching(errorBuilder: (exception: Exception) -> E, block: () -> T): Outcome<E, T> = try {
     Success(block())
 }

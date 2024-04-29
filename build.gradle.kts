@@ -3,7 +3,7 @@ import java.net.URL
 import java.util.Base64
 
 group = "no.dossier.libraries"
-version = "0.2.8"
+version = "0.2.9"
 
 object Meta {
     const val desc = "Functional library"
